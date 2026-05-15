@@ -1,4 +1,3 @@
-cat > todo_app/templates/edit.html << 'EOF'
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +7,7 @@ cat > todo_app/templates/edit.html << 'EOF'
         h1 { color: blue; }
         input, button { padding: 8px; margin: 5px; }
         .message { color: green; }
+        .error { color: red; }
         .save-btn { background-color: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
         .cancel-btn { background-color: #999; color: white; text-decoration: none; padding: 8px 12px; border-radius: 4px; }
     </style>
@@ -21,9 +21,8 @@ cat > todo_app/templates/edit.html << 'EOF'
     
     <form method="POST">
         <input type="text" name="task" value="{{ task.text }}" required>
-        <button type="submit" class="save-btn">Сохранить</button>
+        <button type="submit" class="save-btn">💾 Сохранить</button>
         <a href="/" class="cancel-btn">Отмена</a>
     </form>
 </body>
 </html>
-EOF

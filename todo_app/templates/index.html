@@ -1,4 +1,3 @@
-cat > todo_app/templates/index.html << 'EOF'
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,23 +15,29 @@ cat > todo_app/templates/index.html << 'EOF'
 </head>
 <body>
     <h1>Мои задачи</h1>
-    <ul>
-        {% for task in tasks %}
-            <li>
-                {{ task.text }} — <small>{{ task.date }}</small>
-                <a href="/edit/{{ loop.index0 }}" class="edit-btn">Редактировать</a>
-                <a href="/delete/{{ loop.index0 }}" class="delete-btn">Удалить</a>
-            </li>
-        {% endfor %}
-    </ul>
+    
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    {{ task.text }} — <small>{{ task.date }}</small>
+                    <a href="/edit/{{ loop.index0 }}" class="edit-btn">✏ Редактировать</a>
+                    <a href="/delete/{{ loop.index0 }}" class="delete-btn">🗑 Удалить</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет задач. Добавьте первую!</p>
+    {% endif %}
+    
     <h2>Добавить задачу</h2>
     <form method="POST" action="/add">
         <input type="text" name="task" placeholder="Новая задача" required>
         <button type="submit" class="add-btn">Добавить</button>
     </form>
+    
     <form method="POST" action="/clear">
         <button type="submit" class="clear-btn">Очистить всё</button>
     </form>
 </body>
 </html>
-EOF

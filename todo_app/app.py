@@ -1,4 +1,3 @@
-cat > todo_app/app.py << 'EOF'
 from flask import Flask, render_template, request, redirect
 import json
 import os
@@ -18,6 +17,15 @@ def save_tasks(tasks):
         json.dump(tasks, f, ensure_ascii=False, indent=2)
 
 tasks = load_tasks()
+
+# Автоматическое добавление тестовых задач, если нет
+if not tasks:
+    tasks = [
+        {"text": "Купить хлеб", "date": datetime.now().strftime('%Y-%m-%d %H:%M')},
+        {"text": "Сделать уроки", "date": datetime.now().strftime('%Y-%m-%d %H:%M')},
+        {"text": "Позвонить другу", "date": datetime.now().strftime('%Y-%m-%d %H:%M')}
+    ]
+    save_tasks(tasks)
 
 @app.route('/')
 def index():
@@ -47,29 +55,35 @@ def delete_task(task_id):
         save_tasks(tasks)
     return redirect('/')
 
+# ========== МАРШРУТ ДЛЯ РЕДАКТИРОВАНИЯ (ПР27) ==========
 @app.route('/edit/<int:task_id>', methods=['GET', 'POST'])
 def edit_task(task_id):
+    # Проверка: существует ли задача с таким индексом
     if task_id < 0 or task_id >= len(tasks):
         return "Задача не найдена", 404
     
     task = tasks[task_id]
     
     if request.method == 'POST':
+        # Получаем новый текст из формы
         new_text = request.form.get('task', '').strip()
         old_text = task['text']
         
-        if not new_text:
-            return render_template('edit.html', task=task, message="Текст не может быть пустым!")
+        # ПРОВЕРКА 1: пустое поле
+        if new_text == '':
+            return render_template('edit.html', task=task, message="❌ Текст не может быть пустым!")
         
+        # ПРОВЕРКА 2: текст не изменился
         if new_text == old_text:
-            return render_template('edit.html', task=task, message="Ничего не изменено")
+            return render_template('edit.html', task=task, message="⚠️ Ничего не изменено")
         
+        # Если всё ок — обновляем задачу
         tasks[task_id]['text'] = new_text
         save_tasks(tasks)
         return redirect('/')
     
+    # GET-запрос: показываем форму с текущим текстом
     return render_template('edit.html', task=task)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-EOF
+    app.run(debug=True, host='0.0.0.0', port=5009)
